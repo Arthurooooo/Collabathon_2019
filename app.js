@@ -5,7 +5,7 @@ import express from 'express'
 import morgan from 'morgan'
 import helmet from 'helmet'
 import passport from 'passport'
-import { authenticate } from './src/account/passport'
+import { authenticate } from './src/back/account/passport'
 import bodyParser from 'body-parser'
 
 authenticate(passport)
@@ -56,6 +56,14 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(passport.initialize())
 app.use(passport.session())
 
+app.engine('html', require('ejs').renderFile)
+
 app.use('/', routes)
+
+app.use(function (req, res, next) {
+  var err = new Error('Not Found', req, res, next)
+  err.status = 404
+  res.render('404.html')
+})
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
